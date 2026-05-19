@@ -1,22 +1,28 @@
 import requests
-import csv
-import schedule
-import time
+import json
+import os
 from datetime import datetime
-from pathlib import Path
+from google.oauth2.service_account import Credentials
+from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
 
 # 設定
 STORE_ID = '0010'  # 高雄店
 API_URL = 'https://www.dintaifung.tw/Queue/Home/WebApiTest'
-LOG_FILE = 'wait_time_log.csv'
-INTERVAL = 10  # 分鐘
+SHEET_ID = '1OOmgcaofJtwCCFVZi74n2_wLcrxkKLziZzrXsJArosk'
+SHEET_NAME = '工作表1'  # Google Sheet 預設工作表名稱
 
-# 初始化 CSV 標頭
-def init_csv():
-    if not Path(LOG_FILE).exists():
-        with open(LOG_FILE, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(['時間', '等候時間(分鐘)', '現場號碼', '外帶號碼'])
+# Google Sheets API 認證
+def get_sheet_service():
+    creds_json = os.getenv('GOOGLE_CREDENTIALS')
+    creds_dict = json.loads(creds_json)
+    
+    creds = Credentials.from_service_account_info(
+        creds_dict,
+        scopes=['https://www.googleapis.com/auth/spreadsheets']
+    )
+    
+    return build('sheets', 'v4', credentials=creds)
 
 # 抓取等候時間
 def fetch_wait_time():
@@ -33,7 +39,7 @@ def fetch_wait_time():
         data = response.json()
         store_data = data[0]
         
-        timestamp = datetime.now().strftime('%Y/%m/%d %H:%M')
+        timestamp = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         wait_time = store_data['wait_time']
         dine_in_num = f"{store_data['num_1']},{store_data['num_2']}"
         takeout_num = store_data['togo_numbers']
@@ -42,31 +48,34 @@ def fetch_wait_time():
         print(f"[{timestamp}] 等候時間: {wait_time} 分鐘")
         print(f"            現場叫號: {dine_in_num}")
         print(f"            外帶叫號: {takeout_num}")
-        print('---')
         
-        # 存到 CSV
-        with open(LOG_FILE, 'a', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow([timestamp, wait_time, dine_in_num, takeout_num])
+        # 寫入 Google Sheet
+        write_to_sheet(timestamp, wait_time, dine_in_num, takeout_num)
+        print('✅ 已寫入 Google Sheet')
     
     except requests.exceptions.RequestException as error:
-        print(f"[{datetime.now().strftime('%Y/%m/%d %H:%M')}] 請求失敗: {error}")
+        print(f"❌ 請求失敗: {error}")
     except Exception as error:
-        print(f"[{datetime.now().strftime('%Y/%m/%d %H:%M')}] 解析失敗: {error}")
+        print(f"❌ 錯誤: {error}")
+
+# 寫入 Google Sheet
+def write_to_sheet(timestamp, wait_time, dine_in_num, takeout_num):
+    service = get_sheet_service()
+    
+    values = [[timestamp, wait_time, dine_in_num, takeout_num]]
+    
+    body = {
+        'values': values
+    }
+    
+    service.spreadsheets().values().append(
+        spreadsheetId=SHEET_ID,
+        range=f'{SHEET_NAME}!A:D',
+        valueInputOption='USER_ENTERED',
+        body=body
+    ).execute()
 
 # 主程式
 if __name__ == '__main__':
-    init_csv()
-    print('🚀 開始監控高雄店等候時間...')
-    print(f'⏱️  每 {INTERVAL} 分鐘抓取一次')
-    print(f'📁 數據存在: {LOG_FILE}')
-    print('---')
-    
-    fetch_wait_time()  # 立即執行一次
-    
-    # # 排程每 10 分鐘執行一次
-    # schedule.every(INTERVAL).minutes.do(fetch_wait_time)
-    
-    # while True:
-    #     schedule.run_pending()
-    #     time.sleep(1)
+    print('🚀 開始抓取高雄店等候時間...')
+    fetch_wait_time()
