@@ -64,7 +64,7 @@
    - .github/workflows/main.yml（在 .github 資料夾內）
 2. 編輯 wait_time_scraper.py：
    - 修改 SHEET_ID 為你的 Google Sheet ID
-3. 在倉庫 Settings → Secrets and variables → Actions
+3. 在 Settings → Secrets and variables → Actions
 4. 新增 Secret：
    - Name: GOOGLE_CREDENTIALS
    - Value: 貼入整個 JSON 金鑰檔案內容
