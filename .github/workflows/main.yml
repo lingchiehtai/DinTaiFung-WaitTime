@@ -22,4 +22,12 @@ jobs:
       - name: Run scraper
         run: python wait_time_scraper.py
       
-
+      - name: Test credentials
+        run: |
+          if [ -z "$GOOGLE_CREDENTIALS" ]; then
+            echo "❌ Secret 沒有設定"
+          else
+            echo "✅ Secret 已設定"
+          fi
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
