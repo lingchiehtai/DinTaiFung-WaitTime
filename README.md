@@ -56,20 +56,22 @@
    - 從 JSON 檔案複製 `client_email`
    - 在 Google Sheet 點分享 → 貼入 email → 給予編輯權限
 
-#### 3. Fork 這個倉庫並配置
+#### 3. 上傳檔案到 GitHub
 
-1. Fork 這個倉庫到你的 GitHub 帳號
-2. 在倉庫設定中添加 Secret：
-   - 進入 Settings → Secrets and variables → Actions
-   - 新增 Secret：
-     - Name: `GOOGLE_CREDENTIALS`
-     - Value: 貼入整個 JSON 金鑰檔案內容
-3. 編輯 `wait_time_scraper.py`：
-   - 修改 `SHEET_ID` 為你的 Google Sheet ID
+1. 在你的 GitHub repository 上傳這些檔案：
+   - wait_time_scraper.py
+   - requirements.txt
+   - .github/workflows/main.yml（在 .github 資料夾內）
+2. 編輯 wait_time_scraper.py：
+   - 修改 SHEET_ID 為你的 Google Sheet ID
+3. 在倉庫 Settings → Secrets and variables → Actions
+4. 新增 Secret：
+   - Name: GOOGLE_CREDENTIALS
+   - Value: 貼入整個 JSON 金鑰檔案內容
 
 #### 4. 啟動 GitHub Actions
 
-1. 進入倉庫的 Actions 標籤
+1. 進入repository的 Actions 標籤
 2. 點左邊「DinTaiFung Wait Time Scraper」工作流
 3. 點「Run workflow」手動執行一次測試
 
@@ -97,7 +99,7 @@ GitHub Actions 工作流配置：
 
 ### 查看執行狀態
 
-1. 進入倉庫 → **Actions** 標籤
+1. 進入repository → **Actions** 標籤
 2. 左邊選「DinTaiFung Wait Time Scraper」
 3. 看執行紀錄：
    - ✅ 綠色 = 成功
