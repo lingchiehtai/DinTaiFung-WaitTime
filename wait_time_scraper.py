@@ -67,7 +67,8 @@ def fetch_wait_time():
 def write_to_sheet(timestamp, wait_time, dine_in_num, takeout_num):
     service = get_sheet_service()
     
-    values = [[timestamp, wait_time, dine_in_num, takeout_num]]
+    # 加上單引號讓 Google Sheet 認為是文字
+    values = [[timestamp, wait_time, f"'{dine_in_num}", f"'{takeout_num}"]]
     
     body = {
         'values': values
