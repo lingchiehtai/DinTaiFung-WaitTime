@@ -22,8 +22,4 @@ jobs:
       - name: Run scraper
         run: python wait_time_scraper.py
       
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: wait-time-logs
-          path: wait_time_log.csv
+
