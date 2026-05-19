@@ -1,0 +1,29 @@
+name: DinTaiFung Wait Time Scraper
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # 每 10 分鐘執行
+  workflow_dispatch:  # 允許手動執行
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Run scraper
+        run: python wait_time_scraper.py
+      
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: wait-time-logs
+          path: wait_time_log.csv
