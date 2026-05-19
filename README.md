@@ -71,7 +71,7 @@
 
 #### 4. 啟動 GitHub Actions
 
-1. 進入repository的 Actions 標籤
+1. 進入倉庫的 Actions 標籤
 2. 點左邊「DinTaiFung Wait Time Scraper」工作流
 3. 點「Run workflow」手動執行一次測試
 
@@ -99,7 +99,7 @@ GitHub Actions 工作流配置：
 
 ### 查看執行狀態
 
-1. 進入repository → **Actions** 標籤
+1. 進入倉庫 → **Actions** 標籤
 2. 左邊選「DinTaiFung Wait Time Scraper」
 3. 看執行紀錄：
    - ✅ 綠色 = 成功
@@ -142,12 +142,29 @@ STORE_ID = '0010'  # 改成其他門市代碼
 | 高雄店 | 0010 |
 | 其他門市 | 待補充 |
 
+## 更新備註
+
+### 最近更新
+
+- ✅ 加了 `pytz` 套件（時區設定） - 確保 GitHub Actions 顯示正確的台北時間
+- ✅ 改了寫入 Google Sheet 的格式（加單引號） - 防止號碼被當成數字處理
+- ✅ 改了 cron 排程（只在營業時間執行） - 節省 GitHub Actions 免費額度
+
+### 營業時間設定
+
+預設排程為每 10 分鐘執行一次，營業時間 11:00-21:00（台北時間）
+
+如需調整，編輯 `.github/workflows/main.yml`：
+```yaml
+- cron: '*/10 11-21 * * *'  # 修改這行的時間範圍
+```
+
 ## 改進計畫
 
 - [ ] 監控多間門市
 - [ ] 添加異常通知（例如等候時間過長）
 - [ ] 數據分析和視覺化
-- [ ] 支持店家營業時間設定
+- [ ] 支持動態設定營業時間
 
 ## 授權
 
