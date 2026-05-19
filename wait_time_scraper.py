@@ -5,7 +5,11 @@ from google.oauth2.service_account import Credentials
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 import os
-os.environ['TZ'] = 'Asia/Taipei'
+#os.environ['TZ'] = 'Asia/Taipei'
+import pytz
+
+# 設定時區
+TZ = pytz.timezone('Asia/Taipei')
 
 # 設定
 STORE_ID = '0010'  # 高雄店
@@ -40,7 +44,7 @@ def fetch_wait_time():
         data = response.json()
         store_data = data[0]
         
-        timestamp = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+        timestamp = datetime.now(TZ).strftime('%Y/%m/%d %H:%M:%S')
         wait_time = store_data['wait_time']
         dine_in_num = f"{store_data['num_1']},{store_data['num_2']}"
         takeout_num = store_data['togo_numbers']
