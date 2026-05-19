@@ -1,10 +1,11 @@
 import requests
 import json
-import os
 from datetime import datetime
 from google.oauth2.service_account import Credentials
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
+import os
+os.environ['TZ'] = 'Asia/Taipei'
 
 # 設定
 STORE_ID = '0010'  # 高雄店
